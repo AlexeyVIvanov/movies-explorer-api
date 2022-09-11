@@ -25,8 +25,8 @@ const app = express();
 const allowedCors = [
   'https://localhost:3000',
   'http://localhost:3000',
-  'https://1970ivanov.nomoredomains.sbs',
-  'http://1970ivanov.nomoredomains.sbs',
+  'https://diplomivanov.nomoreparties.ru',
+  'http://diplomivanov.nomoreparties.ru',
 ];
 
 app.use((req, res, next) => {
