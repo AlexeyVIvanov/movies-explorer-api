@@ -14,7 +14,7 @@ const BadRequestError = require('../utils/errors/bad-request');
 
 const ConflictError = require('../utils/errors/conflict');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
+const { NODE_ENV, JWT_SECRET } = require('../utils/env/env');
 
 module.exports.getUsersMe = (req, res, next) => {
   User.findById(req.user._id)
@@ -66,7 +66,9 @@ module.exports.updateProfile = (req, res, next) => {
   })
     .then(() => res.send({ name, email }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.code === 11000) {
+        next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
+      } else if (err.name === 'ValidationError') {
         next(new BadRequestError('Неверный запрос'));
       } else {
         next(err);

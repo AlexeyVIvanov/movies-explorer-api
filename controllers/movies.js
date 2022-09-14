@@ -7,11 +7,9 @@ const ForbiddenError = require('../utils/errors/forbidden');
 const BadRequestError = require('../utils/errors/bad-request');
 
 module.exports.getMovies = (req, res, next) => {
-  Movie.find({})
+  const owner = req.user._id;
+  Movie.find({ owner })
     .then((movie) => {
-      if (!movie) {
-        throw new NotFoundError('Запрашиваемая карточка не найдена');
-      }
       res.send({ data: movie });
     })
     .catch(next);
@@ -31,7 +29,8 @@ module.exports.deleteMovie = (req, res, next) => {
       return Movie.deleteOne(movie)
         .then(() => {
           res.send({ data: movie });
-        });
+        })
+        .catch(next);
     })
     .catch((err) => {
       if (err.name === 'CastError') {

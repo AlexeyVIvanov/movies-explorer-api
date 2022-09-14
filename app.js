@@ -8,17 +8,14 @@ const bodyParser = require('body-parser');
 
 const { errors } = require('celebrate');
 
-const { login, createUser } = require('./controllers/users');
-
-const { userSchemaValidate, loginValidate } = require('./utils/celebrate/celebrate');
-
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { auth } = require('./middlewares/auth');
 
 const NotFoundError = require('./utils/errors/not-found');
 
-const { PORT = 3000 } = process.env;
+const { PORT, dataMovies } = require('./utils/env/env');
+
 const app = express();
 
 // Массив доменов, с которых разрешены кросс-доменные запросы
@@ -58,7 +55,7 @@ app.use((req, res, next) => {
 app.use(bodyParser.json()); // для собирания JSON-формата
 app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
 
-mongoose.connect('mongodb://localhost:27017/moviesdb', {
+mongoose.connect(dataMovies, {
   useNewUrlParser: true,
 });
 
@@ -70,14 +67,14 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.post('/signin', loginValidate, login);
-app.post('/signup', userSchemaValidate, createUser);
+app.use(require('./routes/login'));
+app.use(require('./routes/login'));
 
 app.use(auth);
 
-app.use('/users', require('./routes/users'));
+app.use(require('./routes/users'));
 
-app.use('/movies', require('./routes/movies'));
+app.use(require('./routes/movies'));
 
 app.use('/', (req, res, next) => {
   next(new NotFoundError('Запрашиваемый ресурс не найден'));
