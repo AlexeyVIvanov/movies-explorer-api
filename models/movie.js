@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const isURL = require('validator/lib/isURL');
+
 const { regex } = require('../utils/celebrate/celebrate');
 
 const { ObjectId } = mongoose.Schema;
@@ -37,7 +39,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (v) => regex.test(v),
+      validator: (v) => isURL(v),
       message: 'Неверный формат',
     },
   },
